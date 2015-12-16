@@ -114,7 +114,7 @@ module Sprockets
                 else
                   logger.warn "Writing #{target}"
                   asset.write_to target
-                  asset.write_to "#{target}.gz" if asset.is_a?(Sprockets::Asset)
+                  # asset.write_to "#{target}.gz" if asset.is_a?(Sprockets::Asset)
                 end
 
                 Marshal.dump(data, child_write)
