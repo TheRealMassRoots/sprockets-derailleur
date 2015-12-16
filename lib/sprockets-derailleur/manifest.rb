@@ -58,7 +58,7 @@ module Sprockets
           end
         end
 
-        logger.debug "Cleaning up workers"
+        logger.warn "Cleaning up workers"
 
         workers.each do |worker|
           worker[:read].close
@@ -86,7 +86,6 @@ module Sprockets
     def worker(paths)
       child_read, parent_write = IO.pipe
       parent_read, child_write = IO.pipe
-
       pid = fork do
         begin
           parent_write.close
@@ -111,11 +110,11 @@ module Sprockets
                 target = File.join(dir, asset.digest_path)
 
                 if File.exist?(target)
-                  logger.debug "Skipping #{target}, already exists"
+                  logger.warn "Skipping #{target}, already exists"
                 else
-                  logger.debug "Writing #{target}"
+                  logger.warn "Writing #{target}"
                   asset.write_to target
-                  asset.write_to "#{target}.gz" if asset.is_a?(BundledAsset)
+                  asset.write_to "#{target}.gz" if asset.is_a?(Sprockets::Asset)
                 end
 
                 Marshal.dump(data, child_write)
@@ -125,7 +124,7 @@ module Sprockets
               end
             end
 
-            logger.debug "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
+            logger.warn "Compiled #{path} (#{(time.real * 1000).round}ms, pid #{Process.pid})"
           end
         ensure
           child_read.close
